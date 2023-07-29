@@ -312,6 +312,9 @@ fork(void)
 
   pid = np->pid;
 
+  //将trace_mask拷贝到子进程
+  np->trace_mask = p->trace_mask;
+  
   release(&np->lock);
 
   acquire(&wait_lock);
@@ -681,3 +684,16 @@ procdump(void)
     printf("\n");
   }
 }
+
+//遍历proc数组，统计处于活动状态的进程
+void
+procnum(uint64 *dst)
+{
+  *dst = 0;
+  struct proc *p;
+  for (p = proc; p < &proc[NPROC]; p++) {
+    if (p->state != UNUSED)
+      (*dst)++;
+  }
+}
+
